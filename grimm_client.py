@@ -1,4 +1,4 @@
-#credits: devislunar#0 & mooncrusher
+#credits: devislunar#0 & mooncrusherrr#0
 
 try:
     import requests
@@ -7,11 +7,10 @@ try:
     import asyncio
     import time
     from colorama import Fore, Style
-    from rgbprint import gradient_print
 
 except ModuleNotFoundError:
    print('Módulos ainda não instalados...\ninstalando agora...')
-   os.system('pip install requests python-rapidjson colorama rgbprint')
+   os.system('pip install requests python-rapidjson colorama')
 
 if os.name == 'nt':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -153,14 +152,14 @@ class Snipe:
                         self.task = 'New buy started!'
                         self.productId = items[self.item_index]['productId']
                         self.item_name = items[self.item_index]['name']
-                        await asyncio.sleep(0.001)
+                        await asyncio.sleep(0, 5)
                         os.system(self.clear)
                         await self.update_stats()
                         await self.buy_item_v1(cookie, x_csrf_token, items[i]['id'])
                         if i == 119:
                             cursor = res.json()['nextPageCursor']
                             print(Fore.LIGHTBLACK_EX, f'current cursor: {cursor}', Style.RESET_ALL)
-                            await asyncio.sleep(0.01)
+                            await asyncio.sleep(0, 1)
                             self.item_index = 0
                             continue
                         continue
