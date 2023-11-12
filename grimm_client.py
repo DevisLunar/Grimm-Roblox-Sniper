@@ -130,7 +130,7 @@ class Snipe:
     async def update_stats(self) -> None:
         outputs = [self.accname, self.buys, self.task, self.speed, self.total_errors]
         print(Fore.RED + title +Style.RESET_ALL, flush=True)
-        print('╰┈➤ accounts: ',  Fore.LIGHTBLACK_EX, f'[ {outputs[0]} ]', Style.RESET_ALL, '\n╰┈➤ buys: ', Fore.LIGHTBLACK_EX, f'[ {outputs[1]} ]', Style.RESET_ALL, '\n╰┈➤ task: ', Fore.LIGHTBLACK_EX, f'[ {outputs[2]} ]', Style.RESET_ALL, '\n╰┈➤ speed: ', Fore.LIGHTBLACK_EX, f'[ {outputs[3]} ]', Style.RESET_ALL, '\n╰┈➤ errors: ', Fore.LIGHTBLACK_EX + f'[ {outputs[4]} ]', Style.RESET_ALL, flush=True)
+        print('╰┈➤ accounts: ',  Fore.LIGHTBLACK_EX, f'[ {outputs[0]} ]', Style.RESET_ALL, '\n╰┈➤ buys: ', Fore.LIGHTBLACK_EX, f'[ {outputs[1]} ]', Style.RESET_ALL, '\n╰┈➤ task: ', Fore.LIGHTBLACK_EX, f'[ {outputs[2]} ]', Style.RESET_ALL, '\n╰┈➤ speed: ', Fore.LIGHTBLACK_EX, f'[ {outputs[3]} ]', Style.RESET_ALL, '\n╰┈➤ errors: ', Fore.LIGHTBLACK_EX, f'[ {outputs[4]} ]', Style.RESET_ALL, flush=True)
 
     async def search_v2(self):
         self.task = 'checking...'
