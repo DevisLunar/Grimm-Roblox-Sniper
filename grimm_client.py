@@ -111,12 +111,12 @@ class Snipe:
                         break
                 else:
                     if 'errors' in res.json() and res.json()['errors'][0]['code'] == 0:
-                        print(Fore.LIGHTRED_EX, '[RateLimit] Evitando ratelimit...', Style.RESET_ALL, flush=True)
+                        print(Fore.LIGHTRED_EX, f'[RateLimit] Evitando ratelimit...', Style.RESET_ALL, flush=True)
                         self.total_errors += 1
                         await asyncio.sleep(30)
                         break
                     if 'errors' in res.json() and res.json()['errors'][0]['code'] == 27:
-                        print(Fore.LIGHTRED_EX, '[RateLimit] Evitando ratelimit...', Style.RESET_ALL, flush=True)
+                        print(Fore.LIGHTRED_EX, f'[RateLimit] Evitando ratelimit...', Style.RESET_ALL, flush=True)
                         self.total_errors += 1
                         await asyncio.sleep(30)
                         break
@@ -130,7 +130,7 @@ class Snipe:
     async def update_stats(self) -> None:
         outputs = [self.accname, self.buys, self.task, self.speed, self.total_errors]
         print(Fore.RED + title +Style.RESET_ALL, flush=True)
-        print('╰┈➤ accounts: ',  Fore.LIGHTBLACK_EX, f'[ {outputs[0]} ]', Style.RESET_ALL, '\n╰┈➤ buys: ', Fore.LIGHTBLACK_EX, f'[ {outputs[1]} ]', Style.RESET_ALL, '\n╰┈➤task: ', Fore.LIGHTBLACK_EX, f'[ {outputs[2]} ]', Style.RESET_ALL, '\n╰┈➤speed: ', Fore.LIGHTBLACK_EX, f'[ {outputs[3]} ]', Style.RESET_ALL, '\n╰┈➤errors: ', Fore.LIGHTBLACK_EX + f'[ {outputs[4]} ]', Style.RESET_ALL, flush=True)
+        print('╰┈➤ accounts: ',  Fore.LIGHTBLACK_EX, f'[ {outputs[0]} ]', Style.RESET_ALL, '\n╰┈➤ buys: ', Fore.LIGHTBLACK_EX, f'[ {outputs[1]} ]', Style.RESET_ALL, '\n╰┈➤ task: ', Fore.LIGHTBLACK_EX, f'[ {outputs[2]} ]', Style.RESET_ALL, '\n╰┈➤ speed: ', Fore.LIGHTBLACK_EX, f'[ {outputs[3]} ]', Style.RESET_ALL, '\n╰┈➤ errors: ', Fore.LIGHTBLACK_EX + f'[ {outputs[4]} ]', Style.RESET_ALL, flush=True)
 
     async def search_v2(self):
         self.task = 'checking...'
