@@ -16,24 +16,23 @@ if os.name == 'nt':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 # check version
-
 version = '1.3.0'
 response = requests.get('https://pastebin.com/raw/rjHPdkHN').text
 
 if version != response:
-    print('sua versão do grimm sniper está fora da versão atual, por favor atualize-o')
+    print(Fore.LIGHTRED_EX, f'[{response}] New version, please update :p', Style.RESET_ALL)
     exit(0)
 else:
-    print('Iniciando Grimm..')
+    print(Fore.LIGHTBLACK_EX, 'Starting Grimm Sniper..', Style.RESET_ALL)
 
+# Files
 try:
     with open('config.json', 'r') as f:
         config = json.load(f)
 except:
-    exit('algo deu errado...')
+    exit(Fore.LIGHTBLACK_EX, 'Something went wrong while reading bytes...', Style.RESET_ALL)
 
 # other stuff
-
 title = f"""  ▄████  ██▀███   ██▓ ███▄ ▄███▓ ███▄ ▄███▓
  ██▒ ▀█▒▓██ ▒ ██▒▓██▒▓██▒▀█▀ ██▒▓██▒▀█▀ ██▒
 ▒██░▄▄▄░▓██ ░▄█ ▒▒██▒▓██    ▓██░▓██    ▓██░
@@ -58,22 +57,25 @@ class Snipe:
         self.buys = 0
         self.total_errors = 0
         self.clear = 'cls' if os.name == 'nt' else 'clear'
-
+ 
     def get_username(self, cookie):
         headers = {
         "Cookie": f".ROBLOSECURITY={cookie}"
     }
         response = requests.get('https://users.roblox.com/v1/users/authenticated', headers=headers)
         data = response.json()
-        name = data['name']
-        self.accname = name
+        if 'name' in data:
+            name = data['name']
+            self.accname = name
+        else:
+            print(Fore.LIGHTRED_EX, '[TokenError] Provide a valid token.', Style.RESET_ALL)
+            exit(0)
 
     async def get_xcsrf_token(self, cookie):
         headers = {
             "Cookie": f".ROBLOSECURITY={cookie}"
         }
-    
-        res = requests.post('https://auth.roblox.com/v1/usernames/validate', headers=headers)
+        res = requests.post('https://auth.roblox.com/v1/usernames/validate', headers=headers, verify=config['ssl'])
         csrftoken = res.headers['x-csrf-token']
         return csrftoken
 
@@ -81,9 +83,7 @@ class Snipe:
         try:
             time = asyncio.get_event_loop().time()
             print(Fore.LIGHTRED_EX, f"Buying {self.item_name}...", Style.RESET_ALL)
-
             csrf = await self.get_xcsrf_token(config['accounts']['token'])
-
             headers = {
             "Cookie": f".ROBLOSECURITY={cookie}",
             "x-csrf-token": csrf
@@ -93,9 +93,8 @@ class Snipe:
             "expectedPrice": 0,
             "expectedSellerId": 1,
             }
-         
             while True:
-                res = requests.post(f'https://economy.roblox.com/v1/purchases/products/{self.productId}', headers=headers, data=payload)
+                res = requests.post(f'https://economy.roblox.com/v1/purchases/products/{self.productId}', headers=headers, data=payload, verify=config['ssl'])
                 await asyncio.sleep(config['speed'][0], config['speed'][1])
                 if res.status_code == 200:
                     if 'reason' in res.json() and res.json()['reason'] == 'AlreadyOwned':
@@ -124,7 +123,6 @@ class Snipe:
             print(e, flush=True)
             self.total_errors += 1
             await asyncio.sleep(0, 1)
-
         self.speed = round(asyncio.get_event_loop().time() - time, 3)
 
     async def update_stats(self) -> None:
@@ -133,18 +131,19 @@ class Snipe:
         print('╰┈➤ accounts: ',  Fore.LIGHTBLACK_EX, f'[ {outputs[0]} ]', Style.RESET_ALL, '\n╰┈➤ buys: ', Fore.LIGHTBLACK_EX, f'[ {outputs[1]} ]', Style.RESET_ALL, '\n╰┈➤ task: ', Fore.LIGHTBLACK_EX, f'[ {outputs[2]} ]', Style.RESET_ALL, '\n╰┈➤ speed: ', Fore.LIGHTBLACK_EX, f'[ {outputs[3]} ]', Style.RESET_ALL, '\n╰┈➤ errors: ', Fore.LIGHTBLACK_EX, f'[ {outputs[4]} ]', Style.RESET_ALL, flush=True)
 
     async def search_v2(self):
-        self.task = 'checking...'
+        self.task = 'Checking...'
         os.system(self.clear)
         await self.update_stats()
+
+        # Buy params
         cookie = config['accounts']['token']
         x_csrf_token = await self.get_xcsrf_token(cookie)
-        
+
         cursor = ""
         while cursor is not None:
             while True:
-                res = requests.get('https://catalog.roblox.com/v2/search/items/details', params={"Category": "Accessories", "Subcategory": 19, "Limit": 120, "MaxPrice": 0, "SortType": 6, "cursor": cursor})
+                res = requests.get('https://catalog.roblox.com/v2/search/items/details', params={"Category": "Accessories", "Subcategory": 19, "Limit": 120, "MaxPrice": 0, "SortType": 6, "cursor": cursor}, verify=config['ssl'])
                 if res.status_code == 200:
-                    
                     items = res.json()['data']
                     total_items = len(items)
                                    
@@ -152,7 +151,7 @@ class Snipe:
                         self.task = 'New buy started!'
                         self.productId = items[self.item_index]['productId']
                         self.item_name = items[self.item_index]['name']
-                        await asyncio.sleep(0, 5)
+                        await asyncio.sleep(0, 1)
                         os.system(self.clear)
                         await self.update_stats()
                         await self.buy_item_v1(cookie, x_csrf_token, items[i]['id'])
@@ -163,8 +162,8 @@ class Snipe:
                             self.item_index = 0
                             continue
                         continue
+
     async def main(self) -> None:
-        
         os.system(self.clear)
         self.get_username(config['accounts']['token'])
         await self.update_stats()
