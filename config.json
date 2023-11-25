@@ -2,6 +2,8 @@
     "accounts": {
         "token": ""
     },
-    "speed": [0, 1],
-    "ssl": true
+    "MISC": {
+        "SPEED": [0, 1],
+        "SSL-VERIFY": false
+    }
 }
