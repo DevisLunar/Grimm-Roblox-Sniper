@@ -7,6 +7,7 @@ try:
     import asyncio
     import time
     from colorama import Fore, Style
+    from functools import cache
 
 except ModuleNotFoundError:
    print('Módulos ainda não instalados...\ninstalando agora...')
@@ -16,10 +17,11 @@ if os.name == 'nt':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 # check version
+requests.packages.urllib3.disable_warnings()
 version = '1.3.0'
 response = requests.get('https://pastebin.com/raw/rjHPdkHN').text
 
-if version != response:
+if response != version:
     print(Fore.LIGHTRED_EX, f'[{response}] New version, please update :p', Style.RESET_ALL)
     exit(0)
 else:
@@ -44,8 +46,8 @@ title = f"""  ▄████  ██▀███   ██▓ ███▄ ▄�
       ░    ░      ░         ░          ░   
                                            \nGrimm's Sniper | v{version}"""
 
-class Snipe:
-    
+@cache
+class Snipe: # sniper
     def __init__(self):
         # Init data
         self.accname = 'N/A'
@@ -57,12 +59,12 @@ class Snipe:
         self.buys = 0
         self.total_errors = 0
         self.clear = 'cls' if os.name == 'nt' else 'clear'
- 
+
     def get_username(self, cookie):
         headers = {
         "Cookie": f".ROBLOSECURITY={cookie}"
     }
-        response = requests.get('https://users.roblox.com/v1/users/authenticated', headers=headers)
+        response = requests.get('https://users.roblox.com/v1/users/authenticated', headers=headers, verify=True)
         data = response.json()
         if 'name' in data:
             name = data['name']
@@ -75,7 +77,7 @@ class Snipe:
         headers = {
             "Cookie": f".ROBLOSECURITY={cookie}"
         }
-        res = requests.post('https://auth.roblox.com/v1/usernames/validate', headers=headers, verify=config['ssl'])
+        res = requests.post('https://auth.roblox.com/v1/usernames/validate', headers=headers, verify=True)
         csrftoken = res.headers['x-csrf-token']
         return csrftoken
 
@@ -94,8 +96,9 @@ class Snipe:
             "expectedSellerId": 1,
             }
             while True:
-                res = requests.post(f'https://economy.roblox.com/v1/purchases/products/{self.productId}', headers=headers, data=payload, verify=config['ssl'])
-                await asyncio.sleep(config['speed'][0], config['speed'][1])
+                await asyncio.sleep(config['MISC']['SPEED'][0], config['MISC']['SPEED'][1])
+                res = requests.post(f'https://economy.roblox.com/v1/purchases/products/{self.productId}', headers=headers, data=payload, verify=True)
+
                 if res.status_code == 200:
                     if 'reason' in res.json() and res.json()['reason'] == 'AlreadyOwned':
                         print(res.json()['errorMsg'], flush=True)
@@ -135,14 +138,13 @@ class Snipe:
         os.system(self.clear)
         await self.update_stats()
 
-        # Buy params
         cookie = config['accounts']['token']
         x_csrf_token = await self.get_xcsrf_token(cookie)
 
         cursor = ""
         while cursor is not None:
             while True:
-                res = requests.get('https://catalog.roblox.com/v2/search/items/details', params={"Category": "Accessories", "Subcategory": 19, "Limit": 120, "MaxPrice": 0, "SortType": 6, "cursor": cursor}, verify=config['ssl'])
+                res = requests.get('https://catalog.roblox.com/v2/search/items/details', params={"Category": "Accessories", "Subcategory": 19, "Limit": 120, "MaxPrice": 0, "SortType": 6, "cursor": cursor}, verify=config['MISC']['SSL-VERIFY'])
                 if res.status_code == 200:
                     items = res.json()['data']
                     total_items = len(items)
@@ -155,6 +157,7 @@ class Snipe:
                         os.system(self.clear)
                         await self.update_stats()
                         await self.buy_item_v1(cookie, x_csrf_token, items[i]['id'])
+                        await self.update_stats()
                         if i == 119:
                             cursor = res.json()['nextPageCursor']
                             print(Fore.LIGHTBLACK_EX, f'current cursor: {cursor}', Style.RESET_ALL)
@@ -164,9 +167,10 @@ class Snipe:
                         continue
 
     async def main(self) -> None:
+        token = config['accounts']['token']
         os.system(self.clear)
-        self.get_username(config['accounts']['token'])
+        self.get_username(token)
         await self.update_stats()
         await self.search_v2()
 
-asyncio.run(Snipe().main())
+asyncio.get_event_loop().run_until_complete(Snipe().main())
