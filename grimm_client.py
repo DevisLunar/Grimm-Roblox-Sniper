@@ -11,7 +11,7 @@ try:
 
 except ModuleNotFoundError:
    print('Módulos ainda não instalados...\ninstalando agora...')
-   os.system('pip install requests python-rapidjson colorama')
+   os.system('pip install requests python-rapidjson colorama functools')
 
 if os.name == 'nt':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -129,9 +129,8 @@ class Snipe: # sniper
         self.speed = round(asyncio.get_event_loop().time() - time, 3)
 
     async def update_stats(self) -> None:
-        outputs = [self.accname, self.buys, self.task, self.speed, self.total_errors]
         print(Fore.RED + title +Style.RESET_ALL, flush=True)
-        print('╰┈➤ accounts: ',  Fore.LIGHTBLACK_EX, f'[ {outputs[0]} ]', Style.RESET_ALL, '\n╰┈➤ buys: ', Fore.LIGHTBLACK_EX, f'[ {outputs[1]} ]', Style.RESET_ALL, '\n╰┈➤ task: ', Fore.LIGHTBLACK_EX, f'[ {outputs[2]} ]', Style.RESET_ALL, '\n╰┈➤ speed: ', Fore.LIGHTBLACK_EX, f'[ {outputs[3]} ]', Style.RESET_ALL, '\n╰┈➤ errors: ', Fore.LIGHTBLACK_EX, f'[ {outputs[4]} ]', Style.RESET_ALL, flush=True)
+        print('╰┈➤ accounts: ',  Fore.LIGHTBLACK_EX, f'[ {self.accname} ]', Style.RESET_ALL, '\n╰┈➤ buys: ', Fore.LIGHTBLACK_EX, f'[ {self.buys} ]', Style.RESET_ALL, '\n╰┈➤ task: ', Fore.LIGHTBLACK_EX, f'[ {self.task} ]', Style.RESET_ALL, '\n╰┈➤ speed: ', Fore.LIGHTBLACK_EX, f'[ {self.speed} ]', Style.RESET_ALL, '\n╰┈➤ errors: ', Fore.LIGHTBLACK_EX, f'[ {self.total_errors} ]', Style.RESET_ALL, flush=True)
 
     async def search_v2(self):
         self.task = 'Checking...'
